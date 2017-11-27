@@ -1,0 +1,27 @@
+class Solution{
+public:
+    vector<pair<string, int>> calculate3Gram(const string &s){
+        map<string, int> mymap;
+        for(int begin = 0;begin < s.length();++begin){
+            for(int len = 1;len < 4;++len){
+                if(begin + len <= s.length()){
+                    int cnt = 0;
+                    string target = s.substr(begin, len);
+                    string::size_type pos = 0;
+                    while((pos = s.find(target, pos)) != string::npos){
+                        ++cnt;
+                        pos = pos + len;
+                    }
+                    mymap.insert(pair<string, int>(target, cnt));
+                }
+            }
+        }
+        vector<pair<string, int>> v;
+        for(pair<string, int> p : mymap){
+            v.push_back(p);
+        }
+        auto comp = [](const pair<string, int> &left, const pair<string, int> &right){return left.second > right.second || (left.second == right.second && left.first < right.first);};
+        sort(v.begin(), v.end(), comp);
+        return v;
+    }
+};
