@@ -1,0 +1,71 @@
+#include <iostream>
+#include <vector>
+#include <map>
+
+using namespace std;
+
+vector<int> findV(map<int, pair<int, int>> &m, int target) {
+    vector<int> result;
+    if(m.size()<=0) return result;
+    map<int, pair<int, int>>::iterator it=m.begin();
+    int flag=0;
+    for(;it != m.end();++it) {
+        if(target == it->second.first) {
+            flag=1;
+            break;
+        }
+    }
+    if(flag==1) {
+        int nextTarget = it->second.second;
+        result.push_back(nextTarget);
+        m.erase(it->first);
+        vector<int> tmp = findV(m, nextTarget);
+        result.insert(result.end(), tmp.begin(), tmp.end());
+        return result;
+    }
+    else return result;
+}
+
+int main ()
+{
+    int sys, rel;
+    cin>>sys>>rel;
+    int val[sys];
+    map<int, pair<int, int>> m;
+    for(int i=0;i < sys;++i) {
+        cin>>val[i];
+    }
+    for(int i=0;i< rel;++i) {
+        int tmp1, tmp2;
+        cin>>tmp1>>tmp2;
+        m.insert(make_pair(i, make_pair(tmp1, tmp2)));
+    }
+    vector<vector<int>> resultList;
+    while(m.size() > 0) {
+        vector<int> result;
+        result.push_back(m.begin()->second.first);
+        result.push_back(m.begin()->second.second);
+        int target = m.begin()->second.second;
+        m.erase(m.begin()->first);
+        vector<int> tmp = findV(m, target);
+        result.insert(result.end(), tmp.begin(), tmp.end());
+        resultList.push_back(result);
+    }
+    cout<<resultList.size()<<" ";
+    vector<int> sum;
+    for(auto item : resultList) {
+        int total=0;
+        for(int i : item) {
+            total = total + val[i-1];
+        }
+        sum.push_back(total);
+    }
+    int maxSum=0;
+    for(int i=0;i<sum.size();++i) {
+        if(maxSum<sum[i]) {
+            maxSum = sum[i];
+        }
+    }
+    cout<<maxSum<<endl;
+    return 0;
+}
