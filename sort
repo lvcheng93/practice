@@ -1,0 +1,176 @@
+#include<iostream>
+
+using namespace std;
+
+void swap(int &a, int &b) {
+    int tmp = a;
+    a = b;
+    b = tmp;
+}
+
+void threeQuickSort(int *list, int st, int ed) {
+    if(st>=ed) return;
+    int ele = list[ed];
+    // [st,i] <ele
+    // [i+1,j) =ele
+    // [k,ed) >ele
+    int i = st-1;
+    int j = st;
+    int k = ed;
+    while (j<k) {
+        if(list[j] < ele)
+            swap(list[++i], list[j++]);
+        else if(list[j] > ele) {
+            if(list[--k]<=ele)
+                swap(list[k], list[j]);
+            else
+                continue;
+        }
+        else
+            ++j;
+    }
+    swap(list[k], list[ed]);
+    threeQuickSort(list, st, i);
+    threeQuickSort(list, k+1, ed);
+}
+
+void quickSort(int *list, int st, int ed) {
+    if(st>=ed) return;
+    int ele = list[ed];
+    int i = st-1;
+    int j = st;
+    while(j<ed) {
+        if(list[j]<ele)
+            swap(list[j++], list[++i]);
+        else
+            ++j;
+    }
+    swap(list[i+1], list[ed]);
+    quickSort(list, st, i);
+    quickSort(list, i+2, ed);
+}
+
+void sort(int *list, int st1, int ed1, int st2, int ed2) {
+    int i=st1;
+    int j=st2;
+    int result[ed1+ed2-st1-st2+2];
+    int idx=0;
+    while(i<=ed1 && j<=ed2) {
+        if(list[i]<list[j])
+            result[idx++] = list[i++];
+        else
+            result[idx++] = list[j++];
+    }
+    if(i>ed1) {
+        while(j<=ed2)
+            result[idx++] = list[j++];
+    }
+    else {
+        while(i<=ed1)
+            result[idx++] = list[i++];
+    }
+    int tmp=0;
+    for(int t=st1;t<=ed1;++t)
+        list[t] = result[tmp++];
+    for(int t=st2;t<=ed2;++t)
+        list[t] = result[tmp++];
+}
+
+void mergeSort(int *list, int st, int ed) {
+    if(st>=ed) return;
+    int mid = (st+ed)/2;
+    mergeSort(list, st, mid);
+    mergeSort(list, mid+1, ed);
+    sort(list, st, mid, mid+1, ed);
+    // int i=st;
+    // int j=mid+1;
+    // int result[ed-st+1];
+    // int idx=0;
+    // while(i<=mid && j<=ed) {
+    //     if(list[i]<list[j]) {
+    //         result[idx] = list[i];
+    //         ++i;
+    //     }
+    //     else {
+    //         result[idx] = list[j];
+    //         ++j;
+    //     }
+    //     ++idx;
+    // }
+    // if(i>mid) {
+    //     while(j<=ed) {
+    //         result[idx] = list[j];
+    //         ++j;
+    //         ++idx;
+    //     }
+    // }
+    // else {
+    //     while(i<=mid) {
+    //         result[idx] = list[i];
+    //         ++i;
+    //         ++idx;
+    //     }
+    // }
+    // for(int t=st;t<=ed;++t) {
+    //     list[t] = result[t-st];
+    // }
+}
+
+void insertSort(int *list, int st, int ed) {
+    for(int i=st+1;i<=ed;++i) {
+        int j=st;
+        for(;j<i;++j)
+            if(list[i]<list[j]) break;
+        int tmp = list[i];
+        for(int k=i-1;k>=j;--k)
+            list[k+1] = list[k];
+        list[j] = tmp;
+    }
+}
+
+#define LeftChild(x) 2*x+1
+
+void smallElementDown(int *list, int st, int ed, int root) {
+    while(true) {
+        int leftChild = LeftChild(root);
+        if(leftChild>ed) break;
+        int max = list[leftChild];
+        int flag=0;
+        int rightChild = leftChild+1;
+        if(rightChild<=ed && list[rightChild]>list[leftChild]) {
+            max = list[rightChild];
+            flag=1;
+        }
+        if(max > list[root]) {
+            if(flag==0) {
+                swap(list[root], list[leftChild]);
+                root = leftChild;
+            }
+            else {
+                swap(list[root], list[rightChild]);
+                root = rightChild;
+            }
+        }
+        else break;
+    }
+}
+
+void heapSort(int *list, int st, int ed) {
+    if(st>=ed) return;
+    for(int root=(st+ed)/2+1;root>=st;--root)
+        smallElementDown(list, st, ed, root);
+    swap(list[st], list[ed]);
+    int i = ed-1;
+    while(i>st) {
+        smallElementDown(list, st, i, st);
+        swap(list[i--], list[st]);
+    }
+}
+
+int main()
+{
+    int a[] = {3,5,7,1,5,5,5,9,8};
+    heapSort(a, 0, 8);
+    for(int i:a) cout<<i<<endl;
+    return  0;
+}
