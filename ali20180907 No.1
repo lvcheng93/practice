@@ -1,0 +1,100 @@
+//asdfjkl
+//5
+//as
+//asd
+//df
+//fjkl
+//jkl
+
+#include <iostream>
+#include <string>
+#include <map>
+#include <vector>
+using namespace std;
+
+vector<int> findV(map<int, pair<int, int>> &m, int target) {
+    vector<int> result;
+    if(m.size()<=0) return result;
+    map<int, pair<int, int>>::iterator it=m.begin();
+    int flag=0;
+    for(;it != m.end();++it) {
+        if(target == it->second.first) {
+            flag=1;
+            break;
+        }
+    }
+    if(flag==1) {
+        int nextTarget = it->second.second;
+        result.push_back(nextTarget);
+        m.erase(it->first);
+        vector<int> tmp = findV(m, nextTarget);
+        result.insert(result.end(), tmp.begin(), tmp.end());
+        return result;
+    }
+    else return result;
+}
+
+int main() {
+    string str;
+    int n;
+    cin>>str;
+    int len=str.size();
+    cin>>n;
+    map<int, pair<int, int>> m;
+    for(int j=0;j<n;++j) {
+        string s;
+        cin>>s;
+        char st=s[0];
+        char ed=s[s.size()-1];
+        int idx=0;
+        for(int i=0;i<len;++i) {
+            if(str[i]==st) {
+                idx=i;
+                break;
+            }
+        }
+        int idx2=0;
+        for(int i=0;i<len;++i) {
+            if(str[i]==ed) {
+                idx2=i;
+                break;
+            }
+        }
+        m.insert(make_pair(j, make_pair(idx, idx2)));
+    }
+    vector<vector<int>> resultList;
+    while(m.size()>0) {
+        vector<int> result;
+        result.push_back(m.begin()->second.first);
+        result.push_back(m.begin()->second.second);
+        int target = m.begin()->second.second;
+        m.erase(m.begin()->first);
+        vector<int> tmp = findV(m, target);
+        result.insert(result.end(), tmp.begin(), tmp.end());
+        resultList.push_back(result);
+    }
+    vector<vector<int>> fin;
+    for(auto tmp:resultList) {
+        if(tmp[0]==0 && tmp[tmp.size()-1]==len-1) fin.push_back(tmp);
+    }
+    int max=0;
+    vector<int> res;
+    for(auto item:fin) {
+        int tmp=0;
+        for(int i=0;i+1<item.size();) {
+            tmp += (item[i+1]-item[i]+1)*(item[i+1]-item[i]+1);
+            i=i+2;
+        }
+        if(tmp>max) {
+            max=tmp;
+            res = item;
+        }
+    }
+    for(int i=0;i+1<res.size();) {
+        for(int j=res[i];j<=res[i+1];++j) cout<<str[j];
+        cout<<" ";
+        i=i+2;
+    }
+    cout<<endl;
+    return 0;
+}
